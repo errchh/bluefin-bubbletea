@@ -10,28 +10,22 @@ cp -avf "/ctx/system_files"/. /
 # Install base shell tools
 dnf5 install -y tmux
 
-# Install Traditional Chinese Input Methods, Fonts, Locales, GTK Bridges & UK Dictionary
-dnf5 install -y \
+# Install Traditional Chinese Input Methods & Locales
+dnf5 install -y --skip-unavailable \
     ibus-chewing \
     ibus-libzhuyin \
     ibus-cangjie \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
     ibus-table-chinese-stroke5 \
-    ibus-gtk3 \
-    ibus-gtk4 \
-    google-noto-sans-tc-fonts \
-    google-noto-serif-tc-fonts \
-    google-noto-sans-mono-cjk-tc-fonts \
-    google-noto-sans-hk-fonts \
-    google-noto-serif-hk-fonts \
-    google-noto-sans-mono-cjk-hk-fonts \
+    google-noto-sans-cjk-vf-fonts \
+    google-noto-serif-cjk-vf-fonts \
     glibc-langpack-zh \
-    glibc-langpack-en \
-    hunspell-en-GB
+    glibc-langpack-en
 
 ### Configure GNOME Defaults (Vendor Schema Override)
 
+# Create schema directory if it doesn't exist and set US Keymap + Cangjie 5 as defaults
 mkdir -p /usr/share/glib-2.0/schemas/
 cat <<EOF > /usr/share/glib-2.0/schemas/90_bluefin-zh.gschema.override
 [org.gnome.desktop.input-sources]
