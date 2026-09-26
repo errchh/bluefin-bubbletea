@@ -7,20 +7,38 @@ cp -avf "/ctx/system_files"/. /
 
 ### Install packages
 
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
-
-# this installs a package from fedora repos
+# Install base shell tools
 dnf5 install -y tmux
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
+# Install Traditional Chinese Input Method Engines, Fonts, Locales, and GTK Bridges
+dnf5 install -y \
+    ibus-chewing \
+    ibus-libzhuyin \
+    ibus-cangjie \
+    ibus-table-chinese-cangjie \
+    ibus-table-chinese-quick \
+    ibus-table-chinese-stroke5 \
+    ibus-gtk3 \
+    ibus-gtk4 \
+    google-noto-sans-tc-fonts \
+    google-noto-serif-tc-fonts \
+    google-noto-sans-mono-cjk-tc-fonts \
+    google-noto-sans-hk-fonts \
+    google-noto-serif-hk-fonts \
+    google-noto-sans-mono-cjk-hk-fonts \
+    glibc-langpack-zh
+
+### Configure GNOME Defaults (Vendor Schema Override)
+
+# Create schema directory if it doesn't exist and write default input sources
+mkdir -p /usr/share/glib-2.0/schemas/
+cat <<EOF > /usr/share/glib-2.0/schemas/90_bluefin-zh.gschema.override
+[org.gnome.desktop.input-sources]
+sources=[('xkb', 'us'), ('ibus', 'chewing')]
+EOF
+
+# Recompile GSettings schemas to apply defaults natively
+glib-compile-schemas /usr/share/glib-2.0/schemas
 
 #### Example for enabling a System Unit File
 
