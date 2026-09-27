@@ -13,8 +13,9 @@ There is no application code and no test suite. The only verification is the Git
 - `system_files/` — declarative overlay copied verbatim into the image (`etc/`, `usr/`, currently empty). Prefer dropping config files here over adding `RUN` steps to the `Containerfile`.
 - `image-template.env` — single source of truth for `IMAGE_NAME`, `REPO_ORGANIZATION`, `DEFAULT_TAG`, `BIB_IMAGE`, ArtifactHub metadata. The `Justfile` loads it via `set dotenv-filename`/`dotenv-load`; every recipe reads these vars.
 - `Justfile` — all local and CI commands.
-- `.github/workflows/build.yml` — container build, rechunk, tag, push, sign. `.github/workflows/build-disk.yml` — qcow2/ISO via bootc-image-builder (manual dispatch).
-- `disk_config/` — bootc-image-builder configs (`disk.toml` for qcow2/raw, `iso-gnome.toml`/`iso-kde.toml` for ISOs).
+- `.github/workflows/build.yml` — container build, rechunk, tag, push, sign. `.github/workflows/build-disk.yml` — qcow2 via bootc-image-builder (manual dispatch).
+- `.github/workflows/build-iso.yml` — installer ISO via `jasonn3/build-container-installer` (manual dispatch + monthly cron, 1st at 10:05 UTC). Splits the ISO (GitHub caps release assets at 2 GiB) and publishes only the newest build to the rolling `iso-latest` release.
+- `disk_config/` — bootc-image-builder configs (`disk.toml` for qcow2/raw; `iso-gnome.toml`/`iso-kde.toml` are unused leftovers).
 
 ## Commands
 
@@ -24,7 +25,7 @@ just lint           # shellcheck over all *.sh (only build_files/build.sh today)
 just format         # shfmt --write over all *.sh
 just build          # podman build; optional args: just build <image> <tag>
 just ostree-rechunk # layer rechunk used by CI; `just rechunk` (chunkah) is the experimental alternative
-just build-qcow2 | build-iso | build-raw   # disk images; run-vm-* / spawn-vm to boot them
+just build-qcow2 | build-raw   # disk images; run-vm-qcow2 / run-vm-raw / spawn-vm to boot them
 ```
 
 Order that matters: `just check` → `just lint` → push. Nothing else to run locally.
@@ -41,8 +42,7 @@ Local prerequisites: `just`, `podman`, `jq`, plus `shellcheck`/`shfmt` for lint/
 
 ## Gotchas
 
-- `disk_config/iso.toml` does not exist — only `iso-gnome.toml` and `iso-kde.toml`. `just build-iso`/`rebuild-iso`/`run-vm-iso` and the `anaconda-iso` path in `build-disk.yml` reference the missing file, and `build-disk.yml`'s PR path filter does too. ISO builds fail until that path is reconciled.
-- The ISO kickstarts in `disk_config/iso-*.toml` still hardcode `bootc switch ... ghcr.io/ublue-os/image-template:latest` (the upstream template image), so an installed system would rebase away from this image.
+- The old ISO path is gone: `disk_config/iso.toml` never existed, so `just build-iso`/`rebuild-iso`/`run-vm-iso` and the `anaconda-iso` matrix in `build-disk.yml` were removed. ISOs come only from `build-iso.yml`. The leftover `disk_config/iso-*.toml` are unused and still hardcode `bootc switch ... ghcr.io/ublue-os/image-template:latest` (the upstream image) — fix the kickstart before ever reviving them.
 - `build-disk.yml` sets `IMAGE_NAME` from the GitHub repo name "keep in sync" with `image-template.env`; renaming one without the other breaks disk builds.
 - `just build` and `just generate-build-tags` only add git-SHA labels/tags when `git status -s` is empty. A dirty tree silently produces fewer labels/tags — not a bug.
 - `just check` is sensitive to the local `just` version: CI (via `extractions/setup-just`) passes with current `just` (1.58.0), while older binaries (e.g. 1.42.4) fail wanting `set dotenv-load := true`. If only that diff appears, upgrade `just` — do not edit the `Justfile` to satisfy an old binary.
