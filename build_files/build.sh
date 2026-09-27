@@ -24,18 +24,21 @@ dnf5 install -y --skip-unavailable \
 
 ### Configure GNOME Defaults (Vendor Schema Override)
 
-# Create schema directory if it doesn't exist and set US Keymap + Cangjie 5 as defaults
+# US keyboard + Cangjie 5 input, Hong Kong formats (dates/currency)
 mkdir -p /usr/share/glib-2.0/schemas/
 cat <<EOF > /usr/share/glib-2.0/schemas/90_bluefin-zh.gschema.override
 [org.gnome.desktop.input-sources]
 sources=[('xkb', 'us'), ('ibus', 'cangjie5')]
 
-[system.locale]
-region='en_GB.UTF-8'
+[org.gnome.system.locale]
+region='en_HK.UTF-8'
 EOF
 
 # Recompile GSettings schemas to apply defaults natively
 glib-compile-schemas /usr/share/glib-2.0/schemas
+
+# Default UI/system language: English (United Kingdom)
+echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 
 #### Enable System Unit File
 systemctl enable podman.socket

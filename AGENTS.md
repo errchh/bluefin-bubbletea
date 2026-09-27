@@ -47,4 +47,4 @@ Local prerequisites: `just`, `podman`, `jq`, plus `shellcheck`/`shfmt` for lint/
 - `just build` and `just generate-build-tags` only add git-SHA labels/tags when `git status -s` is empty. A dirty tree silently produces fewer labels/tags — not a bug.
 - `just check` is sensitive to the local `just` version: CI (via `extractions/setup-just`) passes with current `just` (1.58.0), while older binaries (e.g. 1.42.4) fail wanting `set dotenv-load := true`. If only that diff appears, upgrade `just` — do not edit the `Justfile` to satisfy an old binary.
 - `bootc container lint` emits known non-fatal warnings about leftovers in `/run/dnf` and `/var/lib/dnf/...`; the build still succeeds.
-- `README.md` is mostly inherited upstream template docs and is partially stale (e.g. it references `disk_config/iso.toml`). Trust the `Justfile` and workflows over the README.
+- `HOWTOUSE.md` is the inherited upstream template docs and is partially stale (e.g. it references `disk_config/iso.toml`). Trust the `Justfile` and workflows over it. `README.md` is the short user-facing rebase guide (editing it alone does not trigger CI; editing `HOWTOUSE.md` does).
