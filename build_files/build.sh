@@ -12,12 +12,11 @@ dnf5 install -y tmux
 
 # Install Traditional Chinese Input Methods & Locales
 dnf5 install -y --skip-unavailable \
-    ibus-chewing \
-    ibus-libzhuyin \
     ibus-cangjie \
     ibus-table-chinese-cangjie \
     ibus-table-chinese-quick \
     ibus-table-chinese-stroke5 \
+    ibus-table-chinese-cantonese \
     google-noto-sans-cjk-vf-fonts \
     google-noto-serif-cjk-vf-fonts \
     glibc-langpack-zh \
