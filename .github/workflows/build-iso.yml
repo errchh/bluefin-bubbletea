@@ -86,6 +86,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}  # no checkout in this job, gh can't detect the repo from git
         run: |
           set -euo pipefail
 
