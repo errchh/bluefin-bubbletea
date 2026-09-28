@@ -4,7 +4,7 @@
 
 ## What's added on top of Bluefin DX
 
-- IBus input methods: Cangjie 5, Quick, Stroke5, Canton HK, Jyutping
+- IBus input methods: Cangjie 5, Quick, Stroke5, Canton HK, Jyutping, Cantonese Pinyin
 - Defaults: US keyboard + Cangjie 5, UI language English (United Kingdom), dates/currency Hong Kong (HK$)
 - Traditional Chinese fonts (Noto Sans/Serif CJK, HKSCS coverage) plus the `en_GB`, `en_HK` and `zh_HK` locales
 - `podman.socket` enabled
